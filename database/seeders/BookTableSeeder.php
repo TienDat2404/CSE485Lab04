@@ -11,9 +11,10 @@ class BookTableSeeder extends Seeder
     /**
      * Run the database seeds.
      */
-    public function run(): void
+
+     public function run(): void
     {
-        $faker = Faker::create('vi');
+        $faker = Faker::create('vi_VN');
         for( $i = 0; $i < 10; $i++ ) {
             Book::create([
                 'name' => $faker->sentence(3), 
