@@ -26,7 +26,7 @@ class BorrowbookTableSeeder extends Seeder
                 'reader_id' => $faker->randomElement($readerIds),   
                 'book_id' => $faker->randomElement($bookIds),     
                 'borrow_date' => $faker->dateTimeBetween('-2 months', 'now')->format('Y-m-d'), 
-                'return_date' => $faker->optional()->dateTimeBetween('now', '+1 month')->format('Y-m-d'), 
+                'return_date' => $faker->dateTimeBetween('now', '+1 month')->format('Y-m-d'), 
                 'status' => $faker->boolean(50),
             ]);
         }

@@ -1,7 +1,9 @@
 <?php
 
 namespace App\Http\Controllers;
-
+use App\Models\Borrowbook;
+use App\Models\Book;
+use App\Models\Reader;
 use Illuminate\Http\Request;
 
 class BorrowbookController extends Controller
@@ -11,7 +13,9 @@ class BorrowbookController extends Controller
      */
     public function index()
     {
-        //
+      $borrows = Borrowbook::all();
+        return view('borrowbooks.index', compact('borrows'));
+
     }
 
     /**
@@ -20,6 +24,9 @@ class BorrowbookController extends Controller
     public function create()
     {
         //
+        $readers = Reader::all();
+        $books = Book::ALL();
+        return view('borrowbooks.create', compact('readers', 'books'));
     }
 
     /**
@@ -28,7 +35,24 @@ class BorrowbookController extends Controller
     public function store(Request $request)
     {
         //
+        $request->validate([
+            'reader_id' => 'required',
+            'book_id' => 'required',
+            'borrow_date' => 'required',
+            'return_date' => 'required'
+        ]);
+
+        $borrow = Borrowbook::create($request->all());
+        
+        // Update book status to unavailable
+        Book::where('id', $request->book_id)
+            ->update(['status' => false]);
+
+        return redirect()->route('borrowbooks.index')
+            ->with('success', 'Book borrowed successfully');
+    
     }
+    
 
     /**
      * Display the specified resource.
@@ -36,6 +60,8 @@ class BorrowbookController extends Controller
     public function show(string $id)
     {
         //
+        $borrowbook = Borrowbook::find($id);
+        return view('borrowbooks.show', compact('borrowbook'));
     }
 
     /**
@@ -44,6 +70,11 @@ class BorrowbookController extends Controller
     public function edit(string $id)
     {
         //
+        $readers = Reader::all();
+        $books = Book::all();
+        $borrowbook = Borrowbook::find($id);
+        return view('borrowbooks.edit', compact('borrowbook', 'readers', 'books'));
+
     }
 
     /**
@@ -52,6 +83,20 @@ class BorrowbookController extends Controller
     public function update(Request $request, string $id)
     {
         //
+        $request->validate([
+            'reader_id' => 'required',
+            'book_id' => 'required',
+            'borrow_date' => 'required',
+            'return_date' => 'required',
+            'status' => 'boolean'
+        ]);
+        
+        $borrow = Borrowbook::find($id);
+        $borrow->update($request->all());
+        return redirect()->route('borrowbooks.index')
+            ->with('success', 'Borrow updated successfully');
+
+        
     }
 
     /**
@@ -60,5 +105,10 @@ class BorrowbookController extends Controller
     public function destroy(string $id)
     {
         //
+        $borrow = Borrowbook::find($id);
+        $borrow->delete();
+        return redirect()->route('borrowbooks.index')->with('success', 'Borrow deleted successfully.');
     }
+
+    
 }
